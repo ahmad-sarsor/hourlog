@@ -144,3 +144,45 @@
 .inv-sign { margin-top: 34px; font-size: 13px; color: #333; text-align: right; }
 .inv-sign .line { display: inline-block; border-bottom: 1px solid #999; min-width: 190px; margin-right: 10px; height: 22px; vertical-align: bottom; }
 .inv-foot { margin-top: 42px; padding-top: 12px; border-top: 1px solid #E6ECEB; font-size: 10.5px; color: #9AA4A2; line-height: 1.6; text-align: center; }
+
+/* ============================================================
+   Responsive — works on every device incl. iPhone Safari
+   ============================================================ */
+/* stop iOS from inflating text; use the dynamic viewport height so
+   content isn't hidden behind Safari's toolbars */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.tt-root { min-height: 100dvh; }
+
+/* Phones */
+@media (max-width: 600px) {
+  /* inputs MUST be >=16px or iOS Safari auto-zooms on focus.
+     .tt-root <tag> outranks the design-system .hl-input rule. */
+  .tt-root input, .tt-root select, .tt-root textarea { font-size: 16px; }
+
+  .tt-root { padding: 14px 12px calc(30px + env(safe-area-inset-bottom, 0px)); }
+  .tt-head { flex-wrap: wrap; gap: 10px; }
+  .brand-mark { width: 42px; height: 42px; font-size: 19px; }
+
+  /* keep the records-table scroll gutters aligned to the smaller padding */
+  .table-scroll { margin: 0 -12px; padding: 0 12px; }
+
+  /* export rows: label over full-width, easy-to-tap buttons */
+  .export-group { flex-direction: column; align-items: stretch; gap: 8px; }
+  .export-label { white-space: normal; }
+  .export-btns { max-width: none; }
+
+  /* document preview: less chrome; the fixed-width sheet scrolls horizontally
+     (keeps the PDF export at a consistent A4 width regardless of screen) */
+  .doc-stage { padding: 10px; border-radius: var(--radius-lg); }
+
+  /* comfortable tap targets (outrank the injected DS button rule) */
+  .tt-root .hl-btn { padding-top: 11px; padding-bottom: 11px; }
+  .row-actions button { min-height: 36px; }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .brand-name { font-size: 16px; }
+  .brand-sub { font-size: 11px; }
+  .form-actions .hl-btn { flex: 1 1 auto; }
+}
