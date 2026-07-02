@@ -8,6 +8,9 @@ const DNS = window.HourLogILDesignSystem_d9be1f;
 if (!DNS || !window.HL) return; // bundle or data missing — skip quietly
 const HLd = window.HL;
 
+// today's date as YYYY-MM-DD (documents show the real generation date)
+const todayYMD = () => { const d = new Date(); const p = (n) => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); };
+
 /* ---- Hours report (manager / client) — ink -------------- */
 function HoursReportDoc({ kind, rows, totals, settings, period }) {
   const isClient = kind === 'client';
@@ -24,7 +27,7 @@ function HoursReportDoc({ kind, rows, totals, settings, period }) {
             <div className="pdf-doc-title">{title}</div>
             <div>תקופה: {period}</div>
             {isClient && <div>לקוח: {settings.clientDefault}</div>}
-            <div>הופק: 2026-06-25</div>
+            <div>הופק: {todayYMD()}</div>
           </div>
         </div>
         <table className="pdf-table">
@@ -126,7 +129,7 @@ function InvoiceDoc({ rows, totals, settings, invoiceNum, period }) {
                 <tr>
                   <td className="r">{settings.paymentMethod}</td>
                   <td>{settings.paymentDetails}</td>
-                  <td>{HLd.fmtDate('2026-06-25')}</td>
+                  <td>{HLd.fmtDate(todayYMD())}</td>
                   <td className="money">{HLd.invMoney(totals.total)}</td>
                 </tr>
                 <tr className="inv-total-row grand"><td colSpan="2"></td><td className="lbl">סה"כ שולם</td><td className="val">{HLd.invMoney(totals.total)}</td></tr>

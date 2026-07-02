@@ -9,6 +9,7 @@ const NS = window.HourLogILDesignSystem_d9be1f;
 if (!NS || !window.HL) return; // bundle or data missing — skip quietly
 const { Button, IconButton, Card, Input, Select, TimeField, Checkbox, HoursPill, Badge, SummaryRow } = NS;
 const HLh = window.HL;
+const todayYMD = () => { const d = new Date(); const p = (n) => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); };
 
 /* ---- App header ----------------------------------------- */
 function AppHeader({ businessName, onSettings }) {
@@ -28,7 +29,7 @@ function AppHeader({ businessName, onSettings }) {
 
 /* ---- Add-hours form ------------------------------------- */
 function AddHoursForm({ onAdd, defaultClient, defaultDesc, defaultRate }) {
-  const [date, setDate] = React.useState('2026-06-25');
+  const [date, setDate] = React.useState(todayYMD());
   const [client, setClient] = React.useState(defaultClient);
   const [desc, setDesc] = React.useState(defaultDesc);
   const [start, setStart] = React.useState('09:00');
@@ -199,5 +200,42 @@ function RecordsTable({ rows, unreported, showAll, page, onToggle, onEdit, onDel
   );
 }
 
-Object.assign(window, { AppHeader, AddHoursForm, FilterPanel, SummaryPanel, ExportPanel, RecordsTable });
+/* ---- Clock in / clock out ------------------------------- */
+function ClockPanel({ active, onClockIn, onClockOut }) {
+  const [, tick] = React.useState(0);
+  React.useEffect(() => {
+    if (!active) return undefined;
+    const t = setInterval(() => tick((n) => n + 1), 1000);
+    return () => clearInterval(t);
+  }, [active]);
+
+  if (!active) {
+    return (
+      <Card title="מעקב זמן">
+        <div className="form-actions">
+          <Button variant="teal" icon="▶" onClick={onClockIn}>התחל מעקב</Button>
+          <HoursPill icon="⏱">לחיצה מתחילה למדוד עכשיו</HoursPill>
+        </div>
+        <p className="form-note">בלחיצה נרשם זמן ההתחלה. בסיום — רשומה נוצרת אוטומטית עם השעות שנמדדו (לפי לקוח/תיאור/תעריף ברירת המחדל).</p>
+      </Card>
+    );
+  }
+
+  const totalSec = Math.max(0, Math.floor((Date.now() - active.startedAtMs) / 1000));
+  const pad = (n) => (n < 10 ? '0' : '') + n;
+  const elapsed = pad(Math.floor(totalSec / 3600)) + ':' + pad(Math.floor((totalSec % 3600) / 60)) + ':' + pad(totalSec % 60);
+
+  return (
+    <Card title="מעקב זמן — פעיל ●">
+      <div className="form-actions" style={{ alignItems: 'center', gap: 12 }}>
+        <Button variant="primary" icon="⏹" onClick={onClockOut}>סיים ורשום</Button>
+        <HoursPill icon="⏱">{elapsed}</HoursPill>
+        <span className="form-note" style={{ margin: 0 }}>התחלה: {active.startTime} · {HLh.fmtDate(active.date)}</span>
+      </div>
+      <p className="form-note">המעקב פועל. בלחיצה על "סיים ורשום" תיווצר רשומה עם השעות שנמדדו.</p>
+    </Card>
+  );
+}
+
+Object.assign(window, { AppHeader, AddHoursForm, ClockPanel, FilterPanel, SummaryPanel, ExportPanel, RecordsTable });
 })();

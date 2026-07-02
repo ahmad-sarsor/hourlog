@@ -24,7 +24,7 @@
       totalHours += hours; totalSum += sum;
       return isClient
         ? [fmtDate(e.date), e.description || '', e.startTime || '', e.endTime || '', hours, sum]
-        : [fmtDate(e.date), e.client || '', e.description || '', e.startTime || '', e.endTime || '', hours, e.reported ? 'כן' : 'לא'];
+        : [fmtDate(e.date), e.client || '', e.description || '', e.startTime || '', e.endTime || '', hours];
     });
 
     var header, totalRow, cols;
@@ -33,9 +33,9 @@
       totalRow = ['', '', '', 'סה"כ', round2(totalHours), round2(totalSum)];
       cols = [{ wch: 12 }, { wch: 36 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 13 }];
     } else {
-      header = ['תאריך', 'לקוח', 'תיאור', 'משעה', 'עד שעה', 'שעות', 'דווח'];
-      totalRow = ['', '', '', '', 'סה"כ', round2(totalHours), ''];
-      cols = [{ wch: 12 }, { wch: 22 }, { wch: 36 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 7 }];
+      header = ['תאריך', 'לקוח', 'תיאור', 'משעה', 'עד שעה', 'שעות'];
+      totalRow = ['', '', '', '', 'סה"כ', round2(totalHours)];
+      cols = [{ wch: 12 }, { wch: 22 }, { wch: 36 }, { wch: 8 }, { wch: 8 }, { wch: 8 }];
     }
 
     var ws = XLSX.utils.aoa_to_sheet([header].concat(body).concat([totalRow]));

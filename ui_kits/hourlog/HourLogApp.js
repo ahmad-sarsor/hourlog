@@ -5,7 +5,7 @@
    the three exported documents. Mounts to #hl-root.
    ============================================================ */
 (function () {
-const { AppHeader, AddHoursForm, FilterPanel, SummaryPanel, ExportPanel, RecordsTable,
+const { AppHeader, AddHoursForm, ClockPanel, FilterPanel, SummaryPanel, ExportPanel, RecordsTable,
         HoursReportDoc, InvoiceDoc, SettingsModal } = window;
 const DS = window.HourLogILDesignSystem_d9be1f;
 if (!window.HL || !AppHeader || !DS) return; // deps missing — skip quietly
@@ -28,10 +28,11 @@ function AuthScreen({ onSignIn, onSignUp, onReset, onClearMessages, busy, error,
   const [email, setEmail] = React.useState('');
   const [pw, setPw] = React.useState('');
   const [pw2, setPw2] = React.useState('');
+  const [bizName, setBizName] = React.useState('');
   const [localErr, setLocalErr] = React.useState('');
   const isSignup = mode === 'signup';
 
-  const switchMode = (m) => { setMode(m); setLocalErr(''); setPw(''); setPw2(''); if (onClearMessages) onClearMessages(); };
+  const switchMode = (m) => { setMode(m); setLocalErr(''); setPw(''); setPw2(''); setBizName(''); if (onClearMessages) onClearMessages(); };
   const submit = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setLocalErr('');
@@ -40,7 +41,7 @@ function AuthScreen({ onSignIn, onSignUp, onReset, onClearMessages, busy, error,
     if (isSignup) {
       if (pw.length < 6) { setLocalErr('הסיסמה חייבת להכיל לפחות 6 תווים.'); return; }
       if (pw !== pw2) { setLocalErr('הסיסמאות אינן תואמות.'); return; }
-      onSignUp(em, pw);
+      onSignUp(em, pw, bizName.trim());
     } else {
       onSignIn(em, pw);
     }
@@ -82,6 +83,9 @@ function AuthScreen({ onSignIn, onSignUp, onReset, onClearMessages, busy, error,
                 <div style={{ height: 12 }} />
                 <Input label="אימות סיסמה" type="password" value={pw2} autoComplete="new-password"
                        onChange={(e) => setPw2(e.target.value)} />
+                <div style={{ height: 12 }} />
+                <Input label="שם העסק" value={bizName} placeholder="למשל: הסטודיו שלי (ניתן לשנות בהמשך)"
+                       onChange={(e) => setBizName(e.target.value)} />
               </div>
             ) : null}
             {msg ? <p className="form-note" style={{ color: '#c0392b', marginTop: 10 }}>{msg}</p> : null}
@@ -135,7 +139,9 @@ function HourLogApp() {
   const [showAll, setShowAll] = React.useState(false);
   const [view, setView] = React.useState('app'); // app | manager | client | invoice
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [activeSession, setActiveSession] = React.useState(null);
   const docRef = React.useRef(null);
+  const pendingBizRef = React.useRef(''); // business name captured at sign-up, folded into the first seed
 
   const settings = React.useMemo(() => Object.assign({}, H.settings, settingsData || {}), [settingsData]);
   const uid = user ? user.uid : null;
@@ -150,13 +156,22 @@ function HourLogApp() {
   React.useEffect(() => {
     if (!Store || !uid) { setEntries([]); setSettingsData(null); setDataReady(false); setSettingsReady(false); return; }
     setDataReady(false); setSettingsReady(false); setDataErr('');
-    Store.seedSettingsIfMissing(uid, H.settings).catch((e) => console.warn('seed settings:', e && e.message));
+    Store.seedSettingsIfMissing(uid, Object.assign({}, H.settings, pendingBizRef.current ? { businessName: pendingBizRef.current } : {}))
+      .then(() => { pendingBizRef.current = ''; })
+      .catch((e) => console.warn('seed settings:', e && e.message));
     const unsubE = Store.subscribeEntries(uid, (list) => { setEntries(list); setDataReady(true); },
       (err) => { setDataReady(true); setDataErr(err && err.code === 'permission-denied'
         ? 'אין הרשאת גישה — ודא שחוקי ה-Firestore הוגדרו (ראה FIREBASE_SETUP.md).'
         : 'שגיאת טעינת נתונים: ' + (err && err.message)); });
     const unsubS = Store.subscribeSettings(uid, (s) => { setSettingsData(s); setSettingsReady(true); }, () => setSettingsReady(true));
     return () => { unsubE && unsubE(); unsubS && unsubS(); };
+  }, [uid]);
+
+  // restore an in-progress clock-in session for this user (device-local)
+  React.useEffect(() => {
+    if (!uid) { setActiveSession(null); return; }
+    try { const raw = window.localStorage.getItem('hl_active_' + uid); setActiveSession(raw ? JSON.parse(raw) : null); }
+    catch (e) { setActiveSession(null); }
   }, [uid]);
 
   // derived
@@ -221,6 +236,43 @@ function HourLogApp() {
   };
   const flash = (id) => flashOn(id);
 
+  // ---- clock in / out ----
+  const clockIn = () => {
+    if (!uid) return;
+    const d = new Date(); const pad = (n) => (n < 10 ? '0' : '') + n;
+    const sess = {
+      date: d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()),
+      startTime: pad(d.getHours()) + ':' + pad(d.getMinutes()),
+      startedAtMs: Date.now()
+    };
+    setActiveSession(sess);
+    try { window.localStorage.setItem('hl_active_' + uid, JSON.stringify(sess)); } catch (e) { /* ignore */ }
+  };
+  const clearSession = () => {
+    setActiveSession(null);
+    try { window.localStorage.removeItem('hl_active_' + uid); } catch (e) { /* ignore */ }
+  };
+  const clockOut = () => {
+    if (!uid || !activeSession) return;
+    const sess = activeSession;
+    const d = new Date(); const pad = (n) => (n < 10 ? '0' : '') + n;
+    const hours = H.round2(Math.max(0, (Date.now() - sess.startedAtMs) / 3600000));
+    if (hours <= 0) { clearSession(); alert('חלף פחות מדקה — המעקב בוטל ולא נרשמה רשומה.'); return; }
+    const entry = {
+      date: sess.date,
+      client: settings.clientDefault,
+      description: settings.defaultDescription,
+      startTime: sess.startTime,
+      endTime: pad(d.getHours()) + ':' + pad(d.getMinutes()),
+      hours: hours,
+      rate: +settings.defaultRate || 0,
+      reported: false
+    };
+    // Clear the session only after the write succeeds, so a failed write keeps the tracked time.
+    Store.addEntry(uid, entry).then((id) => { clearSession(); flashOn(id); })
+      .catch(fail('רישום הזמן נכשל — המעקב נשמר, אפשר לנסות שוב'));
+  };
+
   // ---- exports ----
   const exportExcel = (kind) => {
     if (!HLExport) { alert('מודול הייצוא לא נטען.'); return; }
@@ -261,11 +313,14 @@ function HourLogApp() {
   const runAuth = (promise, okInfo) => {
     setLoginBusy(true); setLoginErr(''); setAuthInfo('');
     promise.then(() => { if (okInfo) setAuthInfo(okInfo); })
-      .catch((err) => setLoginErr(mapAuthErr(err)))
+      .catch((err) => { pendingBizRef.current = ''; setLoginErr(mapAuthErr(err)); })
       .finally(() => setLoginBusy(false));
   };
-  const doSignIn = (email, pw) => runAuth(Store.login(email, pw));
-  const doSignUp = (email, pw) => runAuth(Store.signup(email, pw));
+  const doSignIn = (email, pw) => { pendingBizRef.current = ''; return runAuth(Store.login(email, pw)); };
+  const doSignUp = (email, pw, businessName) => {
+    pendingBizRef.current = (businessName || '').trim();
+    return runAuth(Store.signup(email, pw));
+  };
   const doReset = (email) => runAuth(Store.resetPassword(email), 'שלחנו אימייל לשחזור סיסמה (בדוק גם בתיקיית הספאם).');
   const doLogout = () => { if (Store) Store.logout(); };
 
@@ -327,6 +382,7 @@ function HourLogApp() {
         <AppHeader businessName={settings.businessName} onSettings={() => setSettingsOpen(true)} />
         <div className="tt-grid">
           <main className="tt-main">
+            <ClockPanel active={activeSession} onClockIn={clockIn} onClockOut={clockOut} />
             <AddHoursForm key={settings.clientDefault + '|' + settings.defaultDescription + '|' + settings.defaultRate}
                           onAdd={addEntry} defaultClient={settings.clientDefault}
                           defaultDesc={settings.defaultDescription} defaultRate={settings.defaultRate} />
