@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Every user may read and write ONLY their own subtree.
+    // Nobody can touch another user's data, and anonymous visitors
+    // (the site is public) get nothing.
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Everything else is denied by default.
+  }
+}

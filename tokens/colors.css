@@ -1,0 +1,65 @@
+/* ============================================================
+   HourLog IL — Color tokens
+   A calm "financial software" palette: deep ink navy, cool
+   blue-grey surfaces, a single confident green as the brand
+   accent, plus gold (documents) and teal (invoice) supports.
+   Values copied verbatim from the source app.
+   ============================================================ */
+:root {
+  /* ---- Ink / neutrals -------------------------------------- */
+  --ink:            #16202B;  /* primary text, brand mark, PDF rules   */
+  --ink-2:          #26333F;  /* secondary text, control labels        */
+  --muted:          #697683;  /* captions, eyebrows, disabled hints    */
+  --text-day:       #5B6B77;  /* weekday column in records table       */
+
+  /* ---- Surfaces & lines ------------------------------------ */
+  --bg:             #E9EDF1;  /* app canvas                            */
+  --surface:        #FFFFFF;  /* cards, inputs, modals                 */
+  --surface-hover:  #F7F9FB;  /* table row hover                       */
+  --line:           #DBE2E9;  /* default border                        */
+  --line-soft:      #EFF2F5;  /* inner table dividers                  */
+  --line-softer:    #F0F3F6;  /* summary row dividers                  */
+
+  /* ---- Accent — brand green -------------------------------- */
+  --accent:         #0E7C5E;  /* primary buttons, totals, focus        */
+  --accent-strong:  #0B6A50;  /* primary hover                         */
+  --accent-soft:    #E4F1EB;  /* pill bg, focus ring                   */
+  --accent-tint:    #F4FBF8;  /* reported-row background               */
+  --reported-text:  #5B6B66;  /* reported-row text                     */
+  --reported-amount:#3F6B5C;  /* reported-row amount                   */
+
+  /* ---- Gold — document / caution accent -------------------- */
+  --gold:           #977423;  /* gold button                           */
+  --gold-soft:      #F4EEDD;  /* invoice grand-total band, gold chips   */
+  --gold-ink:       #B5822F;  /* "not yet reported" badge text         */
+
+  /* ---- Teal — tax-invoice / receipt accent ----------------- */
+  --teal:           #6E9B94;  /* invoice document + teal button        */
+
+  /* ---- Danger --------------------------------------------- */
+  --danger:         #B54034;  /* destructive text/border               */
+  --danger-soft:    #FBF1F0;  /* destructive hover bg, warn pill        */
+  --danger-border:  #E6C4BF;  /* delete-button hover border            */
+  --weekend:        #C0392B;  /* Fri/Sat highlight in records table     */
+
+  /* ============================================================
+     Semantic aliases — reach for these in product code
+     ============================================================ */
+  --text-strong:    var(--ink);
+  --text-body:      var(--ink-2);
+  --text-caption:   var(--muted);
+
+  --page-bg:        var(--bg);
+  --surface-card:   var(--surface);
+  --surface-raised: var(--surface);
+
+  --border:         var(--line);
+  --border-inner:   var(--line-soft);
+
+  --brand:          var(--accent);
+  --brand-hover:    var(--accent-strong);
+  --brand-wash:     var(--accent-soft);
+
+  --focus-ring:     var(--accent-soft);
+  --overlay:        rgba(16, 32, 43, .42);
+}

@@ -1,0 +1,9 @@
+/* ============================================================
+   HourLog IL — Fonts
+   Heebo is the single typeface, loaded from the Google Fonts CDN
+   (weights 300–800). The source app links this exact stylesheet;
+   self-hosting the woff2 binaries is unavailable in this
+   environment, so we mirror the CDN reference.  See readme.md ›
+   VISUAL FOUNDATIONS for the substitution note.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');

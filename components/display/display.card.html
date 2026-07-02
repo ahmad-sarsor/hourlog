@@ -1,0 +1,55 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Display & Data" subtitle="Card surface, hours pill, status badges, summary rows" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { margin: 0; padding: 22px; background: var(--page-bg); }
+  .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; align-items: start; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .row:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<div id="card-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel" data-presets="react">
+const { Card, HoursPill, Badge, SummaryRow } = window.HourLogILDesignSystem_d9be1f;
+function Demo() {
+  return (
+    <div className="grid">
+      <Card title="ייצוא">
+        <div className="row">
+          <HoursPill icon="⏱">8.5 שעות</HoursPill>
+          <HoursPill tone="warn">טווח לא תקין</HoursPill>
+          <HoursPill tone="gold">חשבונית מוכנה</HoursPill>
+        </div>
+        <div className="row">
+          <Badge tone="green" variant="text">הכל דווח ✓</Badge>
+          <Badge tone="gold" variant="text">טרם דווחו: 3</Badge>
+          <Badge tone="red" variant="text">שבת</Badge>
+        </div>
+        <div className="row">
+          <Badge tone="green">דווח</Badge>
+          <Badge tone="gold">ממתין</Badge>
+          <Badge tone="red">חריגה</Badge>
+          <Badge tone="neutral">טיוטה</Badge>
+        </div>
+      </Card>
+      <Card>
+        <SummaryRow label="שעות" value="180" />
+        <SummaryRow label='סכום לפני מע"מ' value="46,800.00 ₪" />
+        <SummaryRow label='מע"מ 18%' value="8,424.00 ₪" />
+        <SummaryRow label='סה"כ כולל מע"מ' value="55,224.00 ₪" total />
+      </Card>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('card-root')).render(<Demo />);
+</script>
+</body>
+</html>

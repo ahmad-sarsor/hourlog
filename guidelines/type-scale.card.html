@@ -1,0 +1,25 @@
+<!-- @dsCard group="Type" viewport="700x230" name="Type Scale" subtitle="From 11px eyebrow to the 30px invoice title — the working hierarchy" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--surface); }
+  .rows { display: flex; flex-direction: column; gap: 12px; }
+  .r { display: flex; align-items: baseline; gap: 16px; }
+  .r .spec { font-family: var(--font-sans); color: var(--ink); line-height: 1; }
+  .r .meta { font-size: 11px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; margin-inline-start: auto; }
+</style>
+</head>
+<body>
+  <div class="rows">
+    <div class="r"><span class="spec" style="font-size:30px;font-weight:800">חשבונית מס/קבלה</span><span class="meta">Invoice title · 30px / 800</span></div>
+    <div class="r"><span class="spec" style="font-size:22px;font-weight:800;color:var(--accent)">דוח שעות</span><span class="meta">Doc title · 22px / 800</span></div>
+    <div class="r"><span class="spec" style="font-size:19px;font-weight:700;letter-spacing:-0.2px">העסק שלי</span><span class="meta">Brand name · 19px / 700</span></div>
+    <div class="r"><span class="spec" style="font-size:18px;font-weight:700">סה"כ כולל מע"מ</span><span class="meta">Lead / total · 18px / 700</span></div>
+    <div class="r"><span class="spec" style="font-size:14.5px;font-weight:400">גוף הטקסט — שדות, כפתורים, תוכן</span><span class="meta">Body · 14.5px / 400</span></div>
+    <div class="r"><span class="spec" style="font-size:12.5px;font-weight:600;color:var(--ink-2)">תווית שדה</span><span class="meta">Label · 12.5px / 600</span></div>
+  </div>
+</body>
+</html>

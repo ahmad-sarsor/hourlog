@@ -1,0 +1,25 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Ink & Neutrals" subtitle="Text hierarchy: primary ink, secondary, muted, weekday" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px; background: var(--page-bg); }
+  .swrow { display: flex; gap: 12px; }
+  .sw { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .chip { height: 86px; border-radius: var(--radius-lg); border: 1px solid rgba(16,32,43,.06); display: grid; place-items: center; }
+  .on { color: #fff; font-weight: 700; font-size: 15px; }
+  .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .val { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+  <div class="swrow">
+    <div class="sw"><div class="chip" style="background:var(--ink)"><span class="on">Aa</span></div><span class="name">ink</span><span class="val">#16202B</span></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-2)"><span class="on">Aa</span></div><span class="name">ink-2</span><span class="val">#26333F</span></div>
+    <div class="sw"><div class="chip" style="background:var(--muted)"><span class="on">Aa</span></div><span class="name">muted</span><span class="val">#697683</span></div>
+    <div class="sw"><div class="chip" style="background:var(--text-day)"><span class="on">Aa</span></div><span class="name">text-day</span><span class="val">#5B6B77</span></div>
+  </div>
+</body>
+</html>

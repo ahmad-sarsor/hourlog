@@ -1,0 +1,25 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Surfaces & Lines" subtitle="The calm canvas: blue-grey page, white paper, hairline borders" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px; background: var(--page-bg); }
+  .swrow { display: flex; gap: 12px; }
+  .sw { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .chip { height: 86px; border-radius: var(--radius-lg); border: 1px solid var(--line); }
+  .name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .val { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+  <div class="swrow">
+    <div class="sw"><div class="chip" style="background:var(--bg)"></div><span class="name">bg</span><span class="val">#E9EDF1</span></div>
+    <div class="sw"><div class="chip" style="background:var(--surface)"></div><span class="name">surface</span><span class="val">#FFFFFF</span></div>
+    <div class="sw"><div class="chip" style="background:var(--surface-hover)"></div><span class="name">surface-hover</span><span class="val">#F7F9FB</span></div>
+    <div class="sw"><div class="chip" style="background:var(--line)"></div><span class="name">line</span><span class="val">#DBE2E9</span></div>
+    <div class="sw"><div class="chip" style="background:var(--line-soft)"></div><span class="name">line-soft</span><span class="val">#EFF2F5</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+/* ============================================================
+   HourLog IL — Spacing, radii & sizing tokens
+   The source uses a slightly organic scale (5 / 6 / 9 / 11 / 14
+   / 16 / 18 / 22). Kept verbatim rather than snapped to a grid,
+   because the calm density of the UI depends on those exact
+   gaps. Radii climb from 7px (checkbox) to 18px (modal).
+   ============================================================ */
+:root {
+  /* ---- Spacing scale -------------------------------------- */
+  --space-2xs:  5px;   /* time-picker gap, tight inline          */
+  --space-xs:   6px;   /* row-action gap, chip padding           */
+  --space-sm:   9px;   /* button v-padding, form gaps            */
+  --space-md:  11px;   /* form-row gap                           */
+  --space-gap: 14px;   /* aside stack gap, card-title margin     */
+  --space-lg:  16px;   /* grid gap, section rhythm               */
+  --space-card:18px;   /* card padding, gutter                   */
+  --space-xl:  22px;   /* modal padding, page top pad            */
+
+  /* ---- Radii ---------------------------------------------- */
+  --radius-xs:  7px;   /* checkbox toggle                        */
+  --radius-sm:  8px;   /* mini icon button                       */
+  --radius-md:  9px;   /* inputs, hours pill                     */
+  --radius-lg: 10px;   /* buttons, icon button                   */
+  --radius-xl: 12px;   /* brand mark                             */
+  --radius-2xl:16px;   /* cards                                  */
+  --radius-3xl:18px;   /* modal                                  */
+
+  /* ---- Control sizing ------------------------------------- */
+  --control-h:    38px;  /* nominal input/button height          */
+  --mark-size:    44px;  /* brand mark square                    */
+  --check-size:   26px;  /* reported checkbox                    */
+  --mini-size:    30px;  /* row-action square button             */
+
+  /* ---- Layout -------------------------------------------- */
+  --page-max:    1340px; /* app content max-width                */
+  --aside-w:      320px; /* right rail width                     */
+  --table-min:    720px; /* records table min-width before scroll*/
+  --doc-w:        780px; /* PDF / invoice document width         */
+}

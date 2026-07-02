@@ -1,0 +1,32 @@
+<!-- @dsCard group="Type" viewport="700x150" name="Eyebrow & Tabular Numerals" subtitle="Uppercase letter-spaced card titles + tabular figures for money/hours" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--surface); display: flex; gap: 40px; align-items: center; flex-wrap: wrap; }
+  .block { display: flex; flex-direction: column; gap: 10px; }
+  .eyebrow { font-size: var(--fs-card-title); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow);
+             text-transform: uppercase; color: var(--muted); }
+  .th { font-size: var(--fs-eyebrow); font-weight: var(--fw-bold); letter-spacing: var(--ls-th);
+        text-transform: uppercase; color: var(--muted); }
+  .nums { font-family: var(--font-sans); font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
+          font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1.5; }
+  .nums .accent { color: var(--accent); }
+  .cap { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+</style>
+</head>
+<body>
+  <div class="block">
+    <span class="eyebrow">הוספת שעות</span>
+    <span class="th">תאריך · לקוח · שעות</span>
+    <span class="cap">Card eyebrow 13/700 · Table header 11/700</span>
+  </div>
+  <div class="block">
+    <span class="nums">8.5 · 260.00 ₪</span>
+    <span class="nums accent">55,224.00 ₪</span>
+    <span class="cap">Tabular numerals — hours & money align</span>
+  </div>
+</body>
+</html>

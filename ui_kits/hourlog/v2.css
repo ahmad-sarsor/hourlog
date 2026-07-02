@@ -1,0 +1,105 @@
+/* ============================================================
+   HourLog IL — Dashboard v2 · refined theme
+   Loaded ONLY by "Dashboard v2.html", layered after styles.css,
+   kit.css and the component-injected styles (hence the .tt-root
+   prefix to out-rank injected single-class rules). Same brand,
+   higher craft: calmer borders, softer ink shadows, larger
+   rhythm, sticky table header, prominent grand total.
+   ============================================================ */
+:root {
+  --v2-border: #E2E8EE;
+  --v2-shadow: 0 1px 2px rgba(16, 32, 43, .04), 0 12px 32px rgba(16, 32, 43, .06);
+}
+.tt-root { padding: 20px 22px 48px; }
+.tt-wrap { max-width: 1280px; }
+.tt-grid { gap: 18px; margin-top: 18px; }
+.tt-main { gap: 18px; }
+.tt-aside { gap: 16px; }
+
+/* ---- Header bar ------------------------------------------ */
+.v2-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  background: var(--surface); border: 1px solid var(--v2-border); border-radius: 16px;
+  padding: 12px 18px; box-shadow: var(--v2-shadow);
+}
+.v2-head .brand-mark { width: 40px; height: 40px; border-radius: 11px; font-size: 20px; box-shadow: none; }
+.v2-head .brand-name { font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.v2-head .brand-sub { font-size: 12px; white-space: nowrap; }
+.v2-head-meta { display: flex; align-items: center; gap: 10px; }
+.v2-chip {
+  font-size: 12.5px; font-weight: 600; color: var(--accent-strong);
+  background: var(--accent-soft); border-radius: 999px; padding: 7px 13px; white-space: nowrap;
+}
+
+/* ---- Cards ------------------------------------------------ */
+.tt-root .hl-card { border-color: var(--v2-border); box-shadow: var(--v2-shadow);
+  padding: 20px 20px 22px; border-radius: 16px; }
+.tt-root .hl-card__title { font-size: 11.5px; letter-spacing: .08em; color: #7E8B98; margin-bottom: 16px; }
+.tt-root .hl-card__head { margin-bottom: 14px; }
+.tt-root .hl-card__head .hl-card__title { margin: 0; }
+
+/* ---- Inputs ----------------------------------------------- */
+.tt-root .hl-input, .tt-root .hl-select, .tt-root .hl-time__sel {
+  border-color: #D7DFE7; border-radius: 10px; padding: 9px 12px; }
+.tt-root .hl-time__sel { padding: 9px 8px; }
+.tt-root .hl-input:hover, .tt-root .hl-select:hover, .tt-root .hl-time__sel:hover { border-color: #BCC8D3; }
+.tt-root .hl-input:focus, .tt-root .hl-select:focus, .tt-root .hl-time__sel:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.tt-root .hl-field, .tt-root .fld, .tt-root .hl-selfield { gap: 6px; }
+
+/* ---- Buttons ---------------------------------------------- */
+.tt-root .hl-btn:active { filter: brightness(.94); }
+.tt-root .hl-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.tt-root .v2-cta { padding: 11px 24px; font-size: 15px; font-weight: 700;
+  box-shadow: 0 5px 14px rgba(14, 124, 94, .18); }
+
+/* ---- Form ------------------------------------------------- */
+.form-row { gap: 12px; }
+.form-row .f-date { flex: 0 1 160px; }
+.form-actions { margin-top: 16px; gap: 12px; }
+.form-note { margin-top: 11px; }
+
+/* ---- Records table ---------------------------------------- */
+.tt-root .table-scroll { max-height: 560px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: #C6CFD8 transparent; }
+.tt-root .tt-table { font-size: 14px; }
+.tt-root .tt-table thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--surface);
+  font-size: 10.5px; letter-spacing: .07em; color: #8794A1;
+  padding: 6px 12px 10px; border-bottom: 1px solid var(--v2-border);
+}
+.tt-root .tt-table td { padding: 14px 10px; border-bottom: 1px solid #F1F4F7; }
+.tt-root .tt-table .c-day { font-weight: 500; color: #77848F; font-size: 13px; }
+.tt-root .tt-table .c-day.weekend { color: var(--weekend); font-weight: 600; }
+.tt-root .tt-table tbody tr { transition: background var(--transition); }
+.tt-root .tt-table tr.reported { background: #EFF7F2; }
+.tt-root .show-more { border-radius: 10px; padding: 9px 26px; }
+.tt-root .empty { padding: 44px 10px; }
+.v2-empty-glyph { font-size: 26px; display: block; margin-bottom: 8px; color: #A6B1BC; }
+
+/* ---- Summary v2 ------------------------------------------- */
+.v2-total { display: flex; flex-direction: column; gap: 1px; margin: -2px 0 8px; }
+.v2-total-label { font-size: 12px; font-weight: 600; color: #7E8B98; }
+.v2-total-value { font-size: 27px; font-weight: 800; color: var(--accent);
+  letter-spacing: -.3px; font-variant-numeric: tabular-nums; }
+.v2-progress { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+.v2-bar { height: 6px; border-radius: 999px; background: #EAEFF3; overflow: hidden; }
+.v2-bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px;
+  transition: width .3s ease; }
+.v2-progress-cap { display: flex; justify-content: space-between; gap: 10px;
+  font-size: 11.5px; color: var(--muted); }
+
+/* ---- Export v2 -------------------------------------------- */
+.v2-export { display: flex; flex-direction: column; gap: 14px; }
+.v2-exrow { display: flex; flex-direction: column; gap: 8px; }
+.v2-exlabel { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.v2-exbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.v2-exbtns.single { grid-template-columns: 1fr; }
+
+/* ---- Compact density (Tweak) ------------------------------ */
+.v2-compact .hl-card { padding: 15px 16px 17px; }
+.v2-compact .tt-table td { padding: 9px 10px; }
+.v2-compact .tt-main { gap: 12px; }
+.v2-compact .tt-aside { gap: 12px; }
+.v2-compact .tt-grid { gap: 14px; }
+.v2-compact .hl-sumrow { padding: 6px 0; }

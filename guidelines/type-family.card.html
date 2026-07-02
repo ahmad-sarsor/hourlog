@@ -1,0 +1,29 @@
+<!-- @dsCard group="Type" viewport="700x200" name="Heebo — The Typeface" subtitle="One family, six weights (300–800). Hebrew + Latin + tabular figures" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--surface); }
+  .big { font-family: var(--font-sans); font-weight: 700; font-size: 46px; color: var(--ink);
+         letter-spacing: -0.4px; line-height: 1.05; margin-bottom: 16px; }
+  .big small { color: var(--muted); font-weight: 400; font-size: 20px; letter-spacing: 0; }
+  .weights { display: flex; flex-wrap: wrap; gap: 20px; }
+  .w { display: flex; flex-direction: column; gap: 2px; }
+  .w span.s { font-family: var(--font-sans); font-size: 22px; color: var(--ink); }
+  .w span.n { font-size: 11px; color: var(--muted); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="big">שעות וחשבוניות <small>· Heebo · Aa Bb 0123</small></div>
+  <div class="weights">
+    <div class="w"><span class="s" style="font-weight:300">אבגד</span><span class="n">Light · 300</span></div>
+    <div class="w"><span class="s" style="font-weight:400">אבגד</span><span class="n">Regular · 400</span></div>
+    <div class="w"><span class="s" style="font-weight:500">אבגד</span><span class="n">Medium · 500</span></div>
+    <div class="w"><span class="s" style="font-weight:600">אבגד</span><span class="n">Semibold · 600</span></div>
+    <div class="w"><span class="s" style="font-weight:700">אבגד</span><span class="n">Bold · 700</span></div>
+    <div class="w"><span class="s" style="font-weight:800">אבגד</span><span class="n">Extrabold · 800</span></div>
+  </div>
+</body>
+</html>

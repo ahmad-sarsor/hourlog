@@ -1,0 +1,60 @@
+/* ============================================================
+   HourLog IL — Typography tokens
+   One family (Heebo). Tabular numerals everywhere money and
+   hours are shown. Uppercase, letter-spaced eyebrows label the
+   cards; tight negative tracking on the brand name. Sizes are
+   copied verbatim from the source — an organic, non-8pt scale.
+   ============================================================ */
+:root {
+  /* ---- Family --------------------------------------------- */
+  --font-sans: 'Heebo', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-numeric: 'Heebo', system-ui, Arial, sans-serif; /* pair with --numeric */
+
+  /* ---- Weights -------------------------------------------- */
+  --fw-light:     300; /* @kind font */
+  --fw-regular:   400; /* @kind font */
+  --fw-medium:    500; /* @kind font */
+  --fw-semibold:  600; /* @kind font */
+  --fw-bold:      700; /* @kind font */
+  --fw-extrabold: 800; /* @kind font */
+
+  /* ---- Sizes (verbatim from source) ----------------------- */
+  --fs-eyebrow:    11px;   /* uppercase table headers            */
+  --fs-caption:    11.5px; /* fineprint, form notes              */
+  --fs-label:      12.5px; /* field labels, brand sub-line       */
+  --fs-card-title: 13px;   /* uppercase card eyebrow titles      */
+  --fs-table:      13.5px; /* records table body                 */
+  --fs-control-sm: 14px;   /* small buttons                      */
+  --fs-body:       14.5px; /* inputs, buttons, base body         */
+  --fs-value:      15px;   /* summary values, emphasis           */
+  --fs-lead:       18px;   /* modal heading, summary total       */
+  --fs-title:      19px;   /* brand name                         */
+  --fs-mark:       22px;   /* brand-mark glyph                   */
+
+  /* ---- Document (PDF) sizes ------------------------------- */
+  --fs-doc-body:   13px;
+  --fs-doc-name:   24px;   /* report business name               */
+  --fs-doc-title:  22px;   /* report document title              */
+  --fs-inv-name:   30px;   /* invoice business name              */
+  --fs-inv-title:  29px;   /* invoice document title             */
+
+  /* ---- Line heights --------------------------------------- */
+  --lh-tight:  1.1;  /* @kind font */
+  --lh-body:   1.45; /* @kind font */
+  --lh-doc:    1.7;  /* @kind font */
+
+  /* ---- Tracking ------------------------------------------- */
+  --ls-eyebrow: 0.06em;  /* card titles      @kind font */
+  --ls-th:      0.03em;  /* table headers    @kind font */
+  --ls-tight:  -0.2px;   /* brand name       @kind font */
+
+  /* ---- Numeric helper ------------------------------------- */
+  --numeric-features: "tnum"; /* @kind other */
+}
+
+/* Utility: tabular-lining numerals for money, hours, dates. */
+.numeric,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: var(--numeric-features);
+}

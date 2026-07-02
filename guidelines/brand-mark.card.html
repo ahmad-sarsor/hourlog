@@ -1,0 +1,34 @@
+<!-- @dsCard group="Brand" viewport="700x160" name="Brand Mark & Lockup" subtitle="No logo file exists — the mark is the currency glyph in an ink square" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 26px 24px; background: var(--surface); display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .mark { width: 44px; height: 44px; border-radius: var(--radius-xl); background: var(--ink); color: #fff;
+          display: grid; place-items: center; font-size: 22px; font-weight: 700; box-shadow: var(--shadow-card); }
+  .name { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; color: var(--ink); }
+  .sub { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+  .alt { display: flex; gap: 12px; }
+  .mark.green { background: var(--accent); }
+  .mark.lg { width: 60px; height: 60px; font-size: 30px; border-radius: 16px; }
+  .note { font-size: 11.5px; color: var(--muted); max-width: 220px; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="brand">
+    <div class="mark">₪</div>
+    <div>
+      <div class="name">העסק שלי</div>
+      <div class="sub">דיווח שעות והפקת חשבוניות</div>
+    </div>
+  </div>
+  <div class="alt">
+    <div class="mark lg">₪</div>
+    <div class="mark lg green">₪</div>
+  </div>
+  <p class="note">The source ships no logo. The mark is the active currency symbol set in a 12px-radius ink square — it swaps with the currency setting.</p>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Accent — Brand Green" subtitle="The single confident accent: CTAs, totals, focus, reported state" -->
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px; background: var(--page-bg); }
+  .swrow { display: flex; gap: 12px; }
+  .sw { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .chip { height: 86px; border-radius: var(--radius-lg); border: 1px solid rgba(16,32,43,.06); }
+  .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .val { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .on { color: #fff; display: grid; place-items: center; height: 100%; font-weight: 700; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="swrow">
+    <div class="sw"><div class="chip" style="background:var(--accent)"><span class="on">Aa ₪</span></div><span class="name">accent</span><span class="val">#0E7C5E</span></div>
+    <div class="sw"><div class="chip" style="background:var(--accent-strong)"><span class="on">hover</span></div><span class="name">accent-strong</span><span class="val">#0B6A50</span></div>
+    <div class="sw"><div class="chip" style="background:var(--accent-soft)"></div><span class="name">accent-soft</span><span class="val">#E4F1EB</span></div>
+    <div class="sw"><div class="chip" style="background:var(--accent-tint)"></div><span class="name">accent-tint</span><span class="val">#F4FBF8</span></div>
+  </div>
+</body>
+</html>
