@@ -33,14 +33,15 @@ function HoursReportDoc({ kind, rows, totals, settings, period }) {
         <table className="pdf-table">
           <thead>
             <tr>
-              <th className="c">תאריך</th><th className="c">משעה</th><th className="c">עד שעה</th>
-              <th className="c">שעות</th>{isClient && <th>סכום</th>}
+              <th className="c">תאריך</th><th className="c">מיקום</th><th className="c">משעה</th>
+              <th className="c">עד שעה</th><th className="c">שעות</th>{isClient && <th>סכום</th>}
             </tr>
           </thead>
           <tbody>
             {rows.map((e) => (
               <tr key={e.id}>
                 <td className="pdf-num">{HLd.fmtDate(e.date)}</td>
+                <td style={{ textAlign: 'center' }}>{e.location || '—'}</td>
                 <td className="pdf-num" style={{ textAlign: 'center' }}>{e.startTime}</td>
                 <td className="pdf-num" style={{ textAlign: 'center' }}>{e.endTime}</td>
                 <td className="pdf-num" style={{ textAlign: 'center' }}>{HLd.nfH.format(e.hours)}</td>

@@ -8,11 +8,15 @@ Open `index.html`. It loads the compiled component bundle (`_ds_bundle.js`),
 then the kit scripts in order.
 
 ## What's interactive
-- **Add hours** — pick a date, edit client/description, set from/to times (24h)
+- **Time tracking** — pick a work location, **התחל מעקב** starts a live timer,
+  **הפסקה / המשך מעקב** pauses and resumes it (break time is excluded from the
+  logged hours), and **סיים ורשום** creates the record automatically.
+- **Add hours** — pick a date, edit client/description, choose a work location
+  (בבית / תל אביב / ירושלים, defaults to בבית), set from/to times (24h)
   and rate; the live pill shows the computed duration; **הוסף רשומה** prepends a row.
-- **Records table** — toggle the green **דווח** checkbox per row, **✕** deletes,
-  **✎** flashes the row, **סמן הכל כדווח** marks the whole view. Weekend days
-  render red; reported rows tint green; **הצג את כל הימים** expands past 10.
+- **Records table** — **✎** edits a row's description & location inline
+  (**✓** saves, **↩** cancels, Enter/Escape work in the text field), **✕** deletes.
+  Weekend days render red; **הצג את כל הימים** expands past 10.
 - **Filter** — month & client selects recompute the table and summary.
 - **Summary** — hours, subtotal, VAT (18%) and grand total.
 - **Export** — the three actions open a **document preview**:
@@ -26,7 +30,7 @@ then the kit scripts in order.
 - `index.html` — entry; links `styles.css` + `kit.css`, loads the bundle & scripts.
 - `kit.css` — screen-level CSS only (app layout, records table, the two documents).
 - `data.js` — sample June 2026 entries + settings + formatting helpers on `window.HL`.
-- `parts.js` — `AppHeader`, `AddHoursForm`, `FilterPanel`, `SummaryPanel`, `ExportPanel`, `RecordsTable`.
+- `parts.js` — `AppHeader`, `AddHoursForm`, `ClockPanel`, `FilterPanel`, `SummaryPanel`, `ExportPanel`, `RecordsTable`.
 - `documents.js` — `HoursReportDoc`, `InvoiceDoc`, `SettingsModal`.
 - `HourLogApp.js` — stateful composer + view switcher; mounts to `#hl-root`.
 
@@ -37,6 +41,6 @@ then the kit scripts in order.
 
 ## Composition
 Every control is a bundle primitive — `Button`, `IconButton`, `Card`, `Input`,
-`Select`, `TimeField`, `Checkbox`, `HoursPill`, `Badge`, `SummaryRow`, `Modal`.
+`Select`, `TimeField`, `HoursPill`, `SummaryRow`, `Modal`.
 The kit adds only screen-level layout and the printable-document markup; it does
 not re-implement any primitive.

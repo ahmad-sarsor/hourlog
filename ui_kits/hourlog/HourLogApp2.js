@@ -72,7 +72,6 @@ function HourLogAppV2() {
 
   const reportedHours = React.useMemo(
     () => H2.round2(rows.filter((e) => e.reported).reduce((a, e) => a + (+e.hours), 0)), [rows]);
-  const unreported = rows.filter((e) => !e.reported).length;
   const period = React.useMemo(() => {
     if (!rows.length) return { from: '2026-06-25', to: '2026-06-25' };
     const d = rows.map((e) => e.date).sort();
@@ -81,14 +80,9 @@ function HourLogAppV2() {
   const periodTxt = month === 'all' ? 'כל התקופות' : monthLabel2(month);
 
   const addEntry = (e) => { e._new = true; setEntries((cur) => [e].concat(cur)); setTimeout(() => { e._new = false; setEntries((cur) => cur.slice()); }, 450); };
-  const toggle = (id) => setEntries((cur) => cur.map((e) => e.id === id ? Object.assign({}, e, { reported: !e.reported }) : e));
   const remove = (id) => setEntries((cur) => cur.filter((e) => e.id !== id));
-  const markAll = () => {
-    const ids = {}; rows.forEach((e) => { ids[e.id] = 1; });
-    const anyUnrep = rows.some((e) => !e.reported);
-    setEntries((cur) => cur.map((e) => ids[e.id] ? Object.assign({}, e, { reported: anyUnrep }) : e));
-  };
   const flash = (id) => { setEntries((cur) => cur.map((e) => e.id === id ? Object.assign({}, e, { _new: true }) : e)); setTimeout(() => setEntries((cur) => cur.map((e) => e.id === id ? Object.assign({}, e, { _new: false }) : e)), 450); };
+  const saveEdit = (id, patch) => { setEntries((cur) => cur.map((e) => e.id === id ? Object.assign({}, e, patch) : e)); flash(id); };
 
   const rootCls = 'tt-root' + (t.density === 'דחוסה' ? ' v2-compact' : '');
 
@@ -141,8 +135,8 @@ function HourLogAppV2() {
           <main className="tt-main">
             <AddHoursFormV2 onAdd={addEntry} defaultClient={settings.clientDefault}
                             defaultDesc={settings.defaultDescription} defaultRate={settings.defaultRate} />
-            <RecordsTable rows={rows} unreported={unreported} showAll={showAll} page={PAGE2}
-                          onToggle={toggle} onEdit={flash} onDelete={remove} onMarkAll={markAll}
+            <RecordsTable rows={rows} showAll={showAll} page={PAGE2}
+                          onSaveEdit={saveEdit} onDelete={remove}
                           onShowMore={() => setShowAll((v) => !v)} />
           </main>
           <aside className="tt-aside">

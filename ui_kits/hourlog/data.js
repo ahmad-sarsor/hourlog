@@ -5,6 +5,7 @@
    ============================================================ */
 (function () {
   var HE_DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+  var LOCATIONS = ['בבית', 'תל אביב', 'ירושלים'];
 
   function dayIdx(ymd) { var p = ymd.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).getDay(); }
   function dayName(ymd) { return HE_DAYS[dayIdx(ymd)]; }
@@ -77,6 +78,7 @@
   window.HL = {
     HE_DAYS: HE_DAYS, dayName: dayName, isWeekend: isWeekend, fmtDate: fmtDate,
     money: money, invMoney: invMoney, nf: nf, nfH: nfH, round2: round2,
+    locations: LOCATIONS, defaultLocation: LOCATIONS[0],
     settings: settings, entries: entries, invoiceNum: 40006
   };
 })();

@@ -32,12 +32,14 @@
 
 /* ---- Add-hours form ------------------------------------- */
 .form-row { display: flex; flex-wrap: wrap; gap: 11px; }
-.form-row > .hl-field, .form-row > .fld { flex: 1 1 120px; }
+.form-row > .hl-field, .form-row > .fld, .form-row > .hl-selfield { flex: 1 1 120px; }
 .fld { display: flex; flex-direction: column; gap: 5px; font-size: var(--fs-label);
        font-weight: var(--fw-semibold); color: var(--ink-2); min-width: 0; }
 .form-row .f-grow { flex: 2 1 220px; }
 .form-row .f-rate { flex: 0 1 150px; }
 .form-row .f-tm   { flex: 0 1 148px; }
+.form-row .f-loc  { flex: 0 1 150px; }
+.form-actions .clock-loc { flex: 0 1 170px; }
 .form-actions { display: flex; gap: 9px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
 .form-note { font-size: var(--fs-caption); color: var(--muted); margin: 9px 2px 0; }
 
@@ -61,10 +63,15 @@
 .tt-table .c-time { direction: ltr; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
 .tt-table .c-day { white-space: nowrap; font-weight: var(--fw-semibold); color: var(--text-day); }
 .tt-table .c-day.weekend { color: var(--weekend); }
-.tt-table tr.reported { background: var(--accent-tint); }
-.tt-table tr.reported td { color: var(--reported-text); }
-.tt-table tr.reported .c-amount { color: var(--reported-amount); }
 .tt-table tr.newrow { animation: hl-fade-in var(--transition-slow) ease both; }
+.tt-table tr.editing { background: var(--accent-tint); }
+.tt-table .cell-edit {
+  width: 100%; box-sizing: border-box; padding: 6px 8px; font: inherit;
+  font-size: var(--fs-table); color: var(--ink, #16202a); background: #fff;
+  border: 1px solid var(--accent); border-radius: var(--radius-sm, 6px);
+}
+.tt-table select.cell-edit { min-width: 88px; padding: 6px 4px; }
+.tt-table .cell-edit:focus { outline: none; box-shadow: var(--shadow-focus); }
 .row-actions { display: flex; gap: 6px; justify-content: flex-start; }
 .empty { text-align: center; color: var(--muted); padding: 34px 10px; font-size: 14px; line-height: 1.6; }
 
@@ -158,6 +165,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   /* inputs MUST be >=16px or iOS Safari auto-zooms on focus.
      .tt-root <tag> outranks the design-system .hl-input rule. */
   .tt-root input, .tt-root select, .tt-root textarea { font-size: 16px; }
+  .tt-root .tt-table .cell-edit { font-size: 16px; }
 
   .tt-root { padding: 14px 12px calc(30px + env(safe-area-inset-bottom, 0px)); }
   .tt-head { flex-wrap: wrap; gap: 10px; }

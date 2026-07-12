@@ -8,10 +8,10 @@
   function round2(x) { return Math.round(((+x || 0) + Number.EPSILON) * 100) / 100; }
   function safe(name) { return String(name || 'export').replace(/[\\/:*?"<>|]+/g, '-').trim() || 'export'; }
 
-  // rows: [{date,client,description,startTime,endTime,hours,rate,reported}]
+  // rows: [{date,client,description,location,startTime,endTime,hours,rate}]
   // Columns mirror the on-screen reports:
-  //   client  -> date, description, from, to, hours, amount   (NO internal rate, NO reported)
-  //   manager -> date, client, description, from, to, hours, reported   (hours only, NO money)
+  //   client  -> date, description, location, from, to, hours, amount   (NO internal rate)
+  //   manager -> date, client, description, location, from, to, hours   (hours only, NO money)
   function toExcel(rows, opts) {
     opts = opts || {};
     if (typeof XLSX === 'undefined') { alert('ספריית האקסל לא נטענה — בדוק את החיבור לאינטרנט ונסה שוב.'); return; }
@@ -23,19 +23,19 @@
       var hours = +e.hours || 0, sum = round2(hours * (+e.rate || 0));
       totalHours += hours; totalSum += sum;
       return isClient
-        ? [fmtDate(e.date), e.description || '', e.startTime || '', e.endTime || '', hours, sum]
-        : [fmtDate(e.date), e.client || '', e.description || '', e.startTime || '', e.endTime || '', hours];
+        ? [fmtDate(e.date), e.description || '', e.location || '', e.startTime || '', e.endTime || '', hours, sum]
+        : [fmtDate(e.date), e.client || '', e.description || '', e.location || '', e.startTime || '', e.endTime || '', hours];
     });
 
     var header, totalRow, cols;
     if (isClient) {
-      header = ['תאריך', 'תיאור', 'משעה', 'עד שעה', 'שעות', 'סכום (₪)'];
-      totalRow = ['', '', '', 'סה"כ', round2(totalHours), round2(totalSum)];
-      cols = [{ wch: 12 }, { wch: 36 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 13 }];
+      header = ['תאריך', 'תיאור', 'מיקום', 'משעה', 'עד שעה', 'שעות', 'סכום (₪)'];
+      totalRow = ['', '', '', '', 'סה"כ', round2(totalHours), round2(totalSum)];
+      cols = [{ wch: 12 }, { wch: 36 }, { wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 13 }];
     } else {
-      header = ['תאריך', 'לקוח', 'תיאור', 'משעה', 'עד שעה', 'שעות'];
-      totalRow = ['', '', '', '', 'סה"כ', round2(totalHours)];
-      cols = [{ wch: 12 }, { wch: 22 }, { wch: 36 }, { wch: 8 }, { wch: 8 }, { wch: 8 }];
+      header = ['תאריך', 'לקוח', 'תיאור', 'מיקום', 'משעה', 'עד שעה', 'שעות'];
+      totalRow = ['', '', '', '', '', 'סה"כ', round2(totalHours)];
+      cols = [{ wch: 12 }, { wch: 22 }, { wch: 36 }, { wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 8 }];
     }
 
     var ws = XLSX.utils.aoa_to_sheet([header].concat(body).concat([totalRow]));

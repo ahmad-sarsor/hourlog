@@ -62,11 +62,11 @@
             date: d.date || '',
             client: d.client || '',
             description: d.description || '',
+            location: d.location || '',
             startTime: d.startTime || '',
             endTime: d.endTime || '',
             hours: typeof d.hours === 'number' ? d.hours : (+d.hours || 0),
-            rate: typeof d.rate === 'number' ? d.rate : (+d.rate || 0),
-            reported: !!d.reported
+            rate: typeof d.rate === 'number' ? d.rate : (+d.rate || 0)
           });
         });
         cb(list);
@@ -81,14 +81,7 @@
       return entriesCol(uid).add(data).then(function (ref) { return ref.id; });
     },
     updateEntry: function (uid, id, patch) { return entriesCol(uid).doc(id).update(clean(patch)); },
-    setReported: function (uid, id, reported) { return entriesCol(uid).doc(id).update({ reported: !!reported }); },
     deleteEntry: function (uid, id) { return entriesCol(uid).doc(id).delete(); },
-    markMany: function (uid, ids, reported) {
-      var ops = ids.map(function (id) {
-        return function (batch) { batch.update(entriesCol(uid).doc(id), { reported: !!reported }); };
-      });
-      return commitChunked(ops);
-    },
 
     // ---- settings (real-time) --------------------------------
     subscribeSettings: function (uid, cb, onErr) {

@@ -7,7 +7,7 @@
 (function () {
 const NS = window.HourLogILDesignSystem_d9be1f;
 if (!NS || !window.HL) return; // bundle or data missing — skip quietly
-const { Button, IconButton, Card, Input, Select, TimeField, Checkbox, HoursPill, Badge, SummaryRow } = NS;
+const { Button, IconButton, Card, Input, Select, TimeField, HoursPill, SummaryRow } = NS;
 const HLh = window.HL;
 const todayYMD = () => { const d = new Date(); const p = (n) => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); };
 
@@ -32,6 +32,7 @@ function AddHoursForm({ onAdd, defaultClient, defaultDesc, defaultRate }) {
   const [date, setDate] = React.useState(todayYMD());
   const [client, setClient] = React.useState(defaultClient);
   const [desc, setDesc] = React.useState(defaultDesc);
+  const [location, setLocation] = React.useState(HLh.defaultLocation);
   const [start, setStart] = React.useState('09:00');
   const [end, setEnd] = React.useState('17:00');
   const [rate, setRate] = React.useState(defaultRate);
@@ -50,7 +51,7 @@ function AddHoursForm({ onAdd, defaultClient, defaultDesc, defaultRate }) {
     if (!valid) return;
     onAdd({
       id: 'n' + Date.now(), date, client: client.trim(), description: desc.trim(),
-      startTime: start, endTime: end, hours, rate: +rate || 0, reported: false
+      location, startTime: start, endTime: end, hours, rate: +rate || 0
     });
   };
 
@@ -63,6 +64,8 @@ function AddHoursForm({ onAdd, defaultClient, defaultDesc, defaultRate }) {
         <Input label="תיאור העבודה" className="f-grow" value={desc}
                placeholder="למשל: פיתוח דשבורד, בניית מודל dbt…"
                onChange={(e) => setDesc(e.target.value)} />
+        <Select label="מיקום העבודה" className="f-loc" value={location}
+                onChange={(e) => setLocation(e.target.value)} options={HLh.locations} />
         <label className="fld f-tm">משעה<TimeField value={start} onChange={setStart} /></label>
         <label className="fld f-tm">עד שעה<TimeField value={end} onChange={setEnd} /></label>
         <Input label='תעריף/שעה (ללא מע"מ)' className="f-rate" type="number" min="0" value={rate}
@@ -130,31 +133,42 @@ function ExportPanel({ disabled, onManager, onClient, onInvoice, onExcel }) {
 }
 
 /* ---- Records table -------------------------------------- */
-function RecordsTable({ rows, unreported, showAll, page, onToggle, onEdit, onDelete, onMarkAll, onShowMore }) {
+function RecordsTable({ rows, showAll, page, onSaveEdit, onDelete, onShowMore }) {
   const shown = showAll ? rows : rows.slice(0, page);
-  const badge = unreported > 0
-    ? <Badge tone="gold" variant="text">{' · טרם דווחו: ' + unreported}</Badge>
-    : rows.length ? <Badge tone="green" variant="text">{' · הכל דווח ✓'}</Badge> : null;
-  const markLabel = unreported > 0 ? '✓ סמן הכל כדווח' : '↺ בטל דיווח לתצוגה';
+  const [editId, setEditId] = React.useState(null);
+  const [editDesc, setEditDesc] = React.useState('');
+  const [editLoc, setEditLoc] = React.useState(HLh.defaultLocation);
 
-  const action = (
-    <Button variant="ghost" size="xs" disabled={rows.length === 0} onClick={onMarkAll}>{markLabel}</Button>
-  );
+  const startEdit = (e) => { setEditId(e.id); setEditDesc(e.description || ''); setEditLoc(e.location || ''); };
+  const cancelEdit = () => setEditId(null);
+  const saveEdit = () => {
+    if (editId && onSaveEdit) {
+      // don't backfill a location onto old records the user didn't touch
+      const patch = { description: editDesc.trim() };
+      if (editLoc) patch.location = editLoc;
+      onSaveEdit(editId, patch);
+    }
+    setEditId(null);
+  };
+  const editKeys = (ev) => {
+    if (ev.key === 'Enter') { ev.preventDefault(); saveEdit(); }
+    if (ev.key === 'Escape') cancelEdit();
+  };
 
   return (
-    <Card title={<>רשומות · {rows.length}{badge}</>} action={action}>
+    <Card title={<>רשומות · {rows.length}</>}>
       <div className="table-scroll">
         <table className="tt-table">
           <colgroup>
-            <col style={{ width: '9%' }} /><col style={{ width: '6%' }} /><col style={{ width: '17%' }} />
-            <col style={{ width: '17%' }} /><col style={{ width: '11%' }} /><col style={{ width: '6%' }} />
-            <col style={{ width: '8%' }} /><col style={{ width: '11%' }} /><col style={{ width: '6%' }} />
+            <col style={{ width: '9%' }} /><col style={{ width: '6%' }} /><col style={{ width: '13%' }} />
+            <col style={{ width: '17%' }} /><col style={{ width: '11%' }} /><col style={{ width: '11%' }} />
+            <col style={{ width: '6%' }} /><col style={{ width: '7%' }} /><col style={{ width: '11%' }} />
             <col style={{ width: '9%' }} />
           </colgroup>
           <thead>
             <tr>
-              <th>תאריך</th><th>יום</th><th>לקוח</th><th>תיאור</th><th>משעה–עד</th>
-              <th>שעות</th><th>תעריף</th><th>סכום</th><th>דווח</th><th></th>
+              <th>תאריך</th><th>יום</th><th>לקוח</th><th>תיאור</th><th>מיקום</th><th>משעה–עד</th>
+              <th>שעות</th><th>תעריף</th><th>סכום</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -163,24 +177,45 @@ function RecordsTable({ rows, unreported, showAll, page, onToggle, onEdit, onDel
             )}
             {shown.map((e) => {
               const wk = HLh.isWeekend(e.date);
+              const editing = editId === e.id;
               return (
-                <tr key={e.id} className={(e.reported ? 'reported' : '') + (e._new ? ' newrow' : '')}>
+                <tr key={e.id} className={(editing ? 'editing' : '') + (e._new ? ' newrow' : '')}>
                   <td className="c-num">{HLh.fmtDate(e.date)}</td>
                   <td className={'c-day' + (wk ? ' weekend' : '')}>{HLh.dayName(e.date)}</td>
                   <td className="c-ell" title={e.client}>{e.client || <span className="dash">—</span>}</td>
-                  <td className="c-ell" title={e.description}>{e.description || <span className="dash">—</span>}</td>
+                  <td className={editing ? '' : 'c-ell'} title={editing ? undefined : e.description}>
+                    {editing
+                      ? <input className="cell-edit" value={editDesc} autoFocus
+                               placeholder="תיאור העבודה"
+                               onChange={(ev) => setEditDesc(ev.target.value)} onKeyDown={editKeys} />
+                      : (e.description || <span className="dash">—</span>)}
+                  </td>
+                  <td className={editing ? '' : 'c-ell'} title={editing ? undefined : e.location}>
+                    {editing
+                      ? <select className="cell-edit" value={editLoc}
+                                onChange={(ev) => setEditLoc(ev.target.value)}>
+                          {!e.location && <option value="">—</option>}
+                          {HLh.locations.map((l) => <option key={l} value={l}>{l}</option>)}
+                        </select>
+                      : (e.location || <span className="dash">—</span>)}
+                  </td>
                   <td className="c-time">{e.startTime && e.endTime ? (e.startTime + '–' + e.endTime) : <span className="dash">—</span>}</td>
                   <td className="c-num">{HLh.nfH.format(e.hours)}</td>
                   <td className="c-num">{HLh.nf.format(e.rate)}</td>
                   <td className="c-amount">{HLh.money(e.hours * e.rate)}</td>
                   <td>
-                    <Checkbox checked={e.reported} onChange={() => onToggle(e.id)}
-                              title={e.reported ? 'דווח — לחץ לביטול' : 'סמן כדווח'} />
-                  </td>
-                  <td>
                     <div className="row-actions">
-                      <IconButton glyph="✎" title="עריכה" onClick={() => onEdit(e.id)} />
-                      <IconButton glyph="✕" variant="danger" title="מחיקה" onClick={() => onDelete(e.id)} />
+                      {editing ? (
+                        <>
+                          <IconButton glyph="✓" title="שמירת השינויים" onClick={saveEdit} />
+                          <IconButton glyph="↩" title="ביטול עריכה" onClick={cancelEdit} />
+                        </>
+                      ) : (
+                        <>
+                          <IconButton glyph="✎" title="עריכת תיאור ומיקום" onClick={() => startEdit(e)} />
+                          <IconButton glyph="✕" variant="danger" title="מחיקה" onClick={() => onDelete(e.id)} />
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -200,39 +235,61 @@ function RecordsTable({ rows, unreported, showAll, page, onToggle, onEdit, onDel
   );
 }
 
-/* ---- Clock in / clock out ------------------------------- */
-function ClockPanel({ active, onClockIn, onClockOut }) {
+/* ---- Clock in / pause / clock out ----------------------- */
+function ClockPanel({ active, onClockIn, onPause, onResume, onClockOut }) {
+  const [location, setLocation] = React.useState(HLh.defaultLocation);
+  const paused = !!(active && active.pausedAtMs);
   const [, tick] = React.useState(0);
+  // the pause/resume buttons swap in place — swallow the second click of a
+  // double-click so it can't silently undo the first one
+  const lastToggleRef = React.useRef(0);
+  const toggleSafe = (fn) => () => {
+    const now = Date.now();
+    if (now - lastToggleRef.current < 400) return;
+    lastToggleRef.current = now; fn();
+  };
   React.useEffect(() => {
-    if (!active) return undefined;
+    if (!active || paused) return undefined;
     const t = setInterval(() => tick((n) => n + 1), 1000);
     return () => clearInterval(t);
-  }, [active]);
+  }, [active, paused]);
 
   if (!active) {
     return (
       <Card title="מעקב זמן">
-        <div className="form-actions">
-          <Button variant="teal" icon="▶" onClick={onClockIn}>התחל מעקב</Button>
+        <div className="form-actions" style={{ alignItems: 'flex-end' }}>
+          <Select label="מיקום העבודה" className="clock-loc" value={location}
+                  onChange={(e) => setLocation(e.target.value)} options={HLh.locations} />
+          <Button variant="teal" icon="▶" onClick={() => onClockIn(location)}>התחל מעקב</Button>
           <HoursPill icon="⏱">לחיצה מתחילה למדוד עכשיו</HoursPill>
         </div>
-        <p className="form-note">בלחיצה נרשם זמן ההתחלה. בסיום — רשומה נוצרת אוטומטית עם השעות שנמדדו (לפי לקוח/תיאור/תעריף ברירת המחדל).</p>
+        <p className="form-note">בלחיצה נרשם זמן ההתחלה. אפשר להשהות להפסקה באמצע, ובסיום — רשומה נוצרת אוטומטית עם השעות שנמדדו (לפי לקוח/תיאור/תעריף ברירת המחדל).</p>
       </Card>
     );
   }
 
-  const totalSec = Math.max(0, Math.floor((Date.now() - active.startedAtMs) / 1000));
+  const endMs = paused ? active.pausedAtMs : Date.now();
+  const totalSec = Math.max(0, Math.floor((endMs - active.startedAtMs - (active.pausedTotalMs || 0)) / 1000));
   const pad = (n) => (n < 10 ? '0' : '') + n;
   const elapsed = pad(Math.floor(totalSec / 3600)) + ':' + pad(Math.floor((totalSec % 3600) / 60)) + ':' + pad(totalSec % 60);
 
   return (
-    <Card title="מעקב זמן — פעיל ●">
+    <Card title={paused ? 'מעקב זמן — בהפסקה ⏸' : 'מעקב זמן — פעיל ●'}>
       <div className="form-actions" style={{ alignItems: 'center', gap: 12 }}>
+        {paused
+          ? <Button variant="teal" icon="▶" onClick={toggleSafe(onResume)}>המשך מעקב</Button>
+          : <Button variant="utility" icon="⏸" onClick={toggleSafe(onPause)}>הפסקה</Button>}
         <Button variant="primary" icon="⏹" onClick={onClockOut}>סיים ורשום</Button>
         <HoursPill icon="⏱">{elapsed}</HoursPill>
-        <span className="form-note" style={{ margin: 0 }}>התחלה: {active.startTime} · {HLh.fmtDate(active.date)}</span>
+        <span className="form-note" style={{ margin: 0 }}>
+          התחלה: {active.startTime} · {HLh.fmtDate(active.date)}{active.location ? ' · ' + active.location : ''}
+        </span>
       </div>
-      <p className="form-note">המעקב פועל. בלחיצה על "סיים ורשום" תיווצר רשומה עם השעות שנמדדו.</p>
+      <p className="form-note">
+        {paused
+          ? 'המעקב מושהה — הזמן לא נספר עד לחיצה על "המשך מעקב". זמן ההפסקה יופחת מהרשומה.'
+          : 'המעקב פועל. "הפסקה" עוצרת את הספירה (להפסקת צהריים וכד\'), ובלחיצה על "סיים ורשום" תיווצר רשומה עם שעות העבודה נטו.'}
+      </p>
     </Card>
   );
 }

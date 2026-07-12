@@ -170,7 +170,13 @@ function HourLogApp() {
   // restore an in-progress clock-in session for this user (device-local)
   React.useEffect(() => {
     if (!uid) { setActiveSession(null); return; }
-    try { const raw = window.localStorage.getItem('hl_active_' + uid); setActiveSession(raw ? JSON.parse(raw) : null); }
+    try {
+      const raw = window.localStorage.getItem('hl_active_' + uid);
+      const sess = raw ? JSON.parse(raw) : null;
+      // sessions saved before pause support lack these fields
+      if (sess) { sess.pausedTotalMs = sess.pausedTotalMs || 0; sess.pausedAtMs = sess.pausedAtMs || null; }
+      setActiveSession(sess);
+    }
     catch (e) { setActiveSession(null); }
   }, [uid]);
 
@@ -199,7 +205,6 @@ function HourLogApp() {
     return { hours: hrs, subtotal: sub, vat, total: H.round2(sub + vat) };
   }, [rows, settings.vatRate]);
 
-  const unreported = rows.filter((e) => !e.reported).length;
   const period = React.useMemo(() => {
     if (!rows.length) return { from: '', to: '' };
     const d = rows.map((e) => e.date).sort();
@@ -219,57 +224,69 @@ function HourLogApp() {
     if (!uid) return;
     Store.addEntry(uid, e).then((id) => flashOn(id)).catch(fail('הוספת רשומה נכשלה'));
   };
-  const toggle = (id) => {
+  const saveEdit = (id, patch) => {
     if (!uid) return;
-    const cur = entries.find((e) => e.id === id);
-    Store.setReported(uid, id, !(cur && cur.reported)).catch(fail('עדכון נכשל'));
+    Store.updateEntry(uid, id, patch).then(() => flashOn(id)).catch(fail('עדכון הרשומה נכשל'));
   };
   const remove = (id) => {
     if (!uid) return;
     if (!window.confirm('למחוק את הרשומה?')) return;
     Store.deleteEntry(uid, id).catch(fail('מחיקה נכשלה'));
   };
-  const markAll = () => {
-    if (!uid || !rows.length) return;
-    const anyUnrep = rows.some((e) => !e.reported);
-    Store.markMany(uid, rows.map((e) => e.id), anyUnrep).catch(fail('עדכון נכשל'));
-  };
-  const flash = (id) => flashOn(id);
 
-  // ---- clock in / out ----
-  const clockIn = () => {
+  // ---- clock in / pause / out ----
+  const persistSession = (sess) => {
+    setActiveSession(sess);
+    try {
+      if (sess) window.localStorage.setItem('hl_active_' + uid, JSON.stringify(sess));
+      else window.localStorage.removeItem('hl_active_' + uid);
+    } catch (e) { /* ignore */ }
+  };
+  const clockIn = (location) => {
     if (!uid) return;
     const d = new Date(); const pad = (n) => (n < 10 ? '0' : '') + n;
-    const sess = {
+    persistSession({
       date: d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()),
       startTime: pad(d.getHours()) + ':' + pad(d.getMinutes()),
-      startedAtMs: Date.now()
-    };
-    setActiveSession(sess);
-    try { window.localStorage.setItem('hl_active_' + uid, JSON.stringify(sess)); } catch (e) { /* ignore */ }
+      startedAtMs: Date.now(),
+      location: location || H.defaultLocation,
+      pausedAtMs: null,
+      pausedTotalMs: 0
+    });
   };
-  const clearSession = () => {
-    setActiveSession(null);
-    try { window.localStorage.removeItem('hl_active_' + uid); } catch (e) { /* ignore */ }
+  const pauseClock = () => {
+    if (!activeSession || activeSession.pausedAtMs) return;
+    persistSession(Object.assign({}, activeSession, { pausedAtMs: Date.now() }));
+  };
+  const resumeClock = () => {
+    if (!activeSession || !activeSession.pausedAtMs) return;
+    persistSession(Object.assign({}, activeSession, {
+      pausedAtMs: null,
+      pausedTotalMs: (activeSession.pausedTotalMs || 0) + (Date.now() - activeSession.pausedAtMs)
+    }));
   };
   const clockOut = () => {
     if (!uid || !activeSession) return;
     const sess = activeSession;
     const d = new Date(); const pad = (n) => (n < 10 ? '0' : '') + n;
-    const hours = H.round2(Math.max(0, (Date.now() - sess.startedAtMs) / 3600000));
-    if (hours <= 0) { clearSession(); alert('חלף פחות מדקה — המעקב בוטל ולא נרשמה רשומה.'); return; }
+    // net worked time: total minus completed breaks (and minus the current break, if paused)
+    const endMs = sess.pausedAtMs || Date.now();
+    const hours = H.round2(Math.max(0, (endMs - sess.startedAtMs - (sess.pausedTotalMs || 0)) / 3600000));
+    if (hours <= 0) { persistSession(null); alert('נמדדה פחות מדקת עבודה — המעקב בוטל ולא נרשמה רשומה.'); return; }
+    // if the user clocks out while paused, work actually ended when the break began
+    const endDate = sess.pausedAtMs ? new Date(sess.pausedAtMs) : d;
     const entry = {
       date: sess.date,
       client: settings.clientDefault,
       description: settings.defaultDescription,
+      location: sess.location || H.defaultLocation,
       startTime: sess.startTime,
-      endTime: pad(d.getHours()) + ':' + pad(d.getMinutes()),
+      endTime: pad(endDate.getHours()) + ':' + pad(endDate.getMinutes()),
       hours: hours,
-      rate: +settings.defaultRate || 0,
-      reported: false
+      rate: +settings.defaultRate || 0
     };
     // Clear the session only after the write succeeds, so a failed write keeps the tracked time.
-    Store.addEntry(uid, entry).then((id) => { clearSession(); flashOn(id); })
+    Store.addEntry(uid, entry).then((id) => { persistSession(null); flashOn(id); })
       .catch(fail('רישום הזמן נכשל — המעקב נשמר, אפשר לנסות שוב'));
   };
 
@@ -382,14 +399,15 @@ function HourLogApp() {
         <AppHeader businessName={settings.businessName} onSettings={() => setSettingsOpen(true)} />
         <div className="tt-grid">
           <main className="tt-main">
-            <ClockPanel active={activeSession} onClockIn={clockIn} onClockOut={clockOut} />
+            <ClockPanel active={activeSession} onClockIn={clockIn} onPause={pauseClock}
+                        onResume={resumeClock} onClockOut={clockOut} />
             <AddHoursForm key={settings.clientDefault + '|' + settings.defaultDescription + '|' + settings.defaultRate}
                           onAdd={addEntry} defaultClient={settings.clientDefault}
                           defaultDesc={settings.defaultDescription} defaultRate={settings.defaultRate} />
             {dataErr
               ? <Card title="בעיה בטעינת הנתונים"><p style={{ color: '#c0392b', margin: 0 }}>{dataErr}</p></Card>
-              : <RecordsTable rows={rows} unreported={unreported} showAll={showAll} page={PAGE}
-                          onToggle={toggle} onEdit={flash} onDelete={remove} onMarkAll={markAll}
+              : <RecordsTable rows={rows} showAll={showAll} page={PAGE}
+                          onSaveEdit={saveEdit} onDelete={remove}
                           onShowMore={() => setShowAll((v) => !v)} />}
           </main>
           <aside className="tt-aside">
